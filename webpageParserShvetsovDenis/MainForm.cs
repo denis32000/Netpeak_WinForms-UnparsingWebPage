@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -22,36 +23,25 @@ namespace webpageParserShvetsovDenis
             InitializeComponent();
         }
         
-        private async void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             // Do i need async or make thread from the beggining
-            
-            //HtmlNode specificNode = doc.DocumentNode`("nodeId");
-            //HtmlNodeCollection nodesMatchingXPath = doc.DocumentNode.SelectNodes("x/path/nodes");
-            //doc.
-
-            //textBox2.Text = data;
-            //string result = data.Substring("id=\"metadata\" class=\"meta\">", "</div>", 0);
         }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
+        
         private void buttonLinkRequest_Click(object sender, EventArgs e)
         {
-            //string webAdress = textBoxWebAdress.Text;
-            //
-            //if (String.IsNullOrEmpty(webAdress))
-            //{
-            //    //TODO: error message
-            //    return;
-            //}
+            // http://kapon.com.ua/beginning.php
+            string webAdress = textBoxWebAdress.Text; //"https://netpeaksoftware.com";
+            //string pattern = @"*://*.*/";
+            //Regex rgx = new Regex(pattern);
+            if (String.IsNullOrEmpty(webAdress))
+            {
+                //TODO: error message
+                return;
+            }
 
-            string webAddress = "https://netpeaksoftware.com/"; // http://kapon.com.ua/beginning.php
 
-            var req = WebRequest.Create(webAddress) as HttpWebRequest;
+            var req = WebRequest.Create(webAdress) as HttpWebRequest;
             if (req == null)
             {
                 MessageBox.Show("Unable to create web request from this link.");
@@ -76,11 +66,11 @@ namespace webpageParserShvetsovDenis
                 MessageBox.Show("Unable to receive data stream from this resource.");
                 return;
             }
-            serverResponse.Close();
 
             var streamReader = new StreamReader(responseStream);
             string data = streamReader.ReadToEnd();
             streamReader.Close();
+            serverResponse.Close();
 
             var doc = new HtmlDocument();
             doc.LoadHtml(data);
@@ -108,7 +98,7 @@ namespace webpageParserShvetsovDenis
 
             var responseModel = new ResponseModel
             {
-                Link = webAddress,
+                Link = webAdress,
                 Title = pageTitle,
                 Description = pageDescription,
                 ResponseCode = (int)serverResponse.StatusCode,
@@ -117,11 +107,71 @@ namespace webpageParserShvetsovDenis
                 HeadersH1 = h1Headers.ToList(),
                 Images = images.ToList()
             };
+
+            ShowResponseModel(responseModel);
+        }
+
+        public void ShowResponseModel(ResponseModel responseModel)
+        {
+            int listElementsCounter = 0;
+            StringBuilder sb = new StringBuilder();
+            //Dictionary<string, string> rowsElements = new Dictionary<string, string>();
+            sb.Append($"Web resource adress {responseModel.Link}");
+            sb.Append($"\nTitle: {responseModel.Link}");
+            sb.Append($"\nDescription: {responseModel.Link}");
+            sb.Append($"\nResponse Code: {responseModel.Link}");
+            sb.Append($"\nResponse Time: {responseModel.Link}");
+
+            listElementsCounter = 0;
+            sb.Append("Headers");
+            foreach (var header in responseModel.HeadersH1)
+            {
+                listElementsCounter++;
+                sb.Append($"\n\t{listElementsCounter}. {header}");
+            }
+            
+            sb.Append("\nLinks:");
+            listElementsCounter = 0;
+            foreach (var link in responseModel.AhrefLinks)
+            {
+                listElementsCounter++;
+                sb.Append($"\n\t{listElementsCounter}. {link}");
+            }
+            
+            sb.Append("\nImages:");
+            listElementsCounter = 0;
+            foreach (var images in responseModel.Images)
+            {
+                listElementsCounter++;
+                sb.Append($"\n\t{listElementsCounter}. {images}");
+            }
+
+            richTextBox1.Text = sb.ToString();
+            //dataGridView1.Rows.Add(rowsElements); ///Columns.Add("Item")
+            //listView1.Items.Add("test");
+            //listView1.Items.Add("testfdfff");
+            //label1.Text = sb.ToString();
+            //dataGridView1. = sb.ToString();
         }
 
         private void textBoxWebAdress_TextChanged(object sender, EventArgs e)
         {
             // TODO: validation
+        }
+        
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
