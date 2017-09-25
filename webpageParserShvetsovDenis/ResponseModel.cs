@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,8 +9,8 @@ namespace webpageParserShvetsovDenis
         public string Link { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public string ServerResponse { get; set; }
-        public string ResponseTime { get; set; }
+        public int ResponseCode { get; set; }
+        public TimeSpan ResponseTime { get; set; }
 
         [NotMapped]
         public List<string> HeadersH1 { get; set; }

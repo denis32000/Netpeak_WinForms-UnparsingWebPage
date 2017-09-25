@@ -28,28 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.buttonLinkRequest = new System.Windows.Forms.Button();
+            this.textBoxWebAdress = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // button1
+            // buttonLinkRequest
             // 
-            this.button1.Location = new System.Drawing.Point(503, 75);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.buttonLinkRequest.Location = new System.Drawing.Point(469, 75);
+            this.buttonLinkRequest.Name = "buttonLinkRequest";
+            this.buttonLinkRequest.Size = new System.Drawing.Size(109, 23);
+            this.buttonLinkRequest.TabIndex = 0;
+            this.buttonLinkRequest.Text = "Проверить адрес";
+            this.buttonLinkRequest.UseVisualStyleBackColor = true;
+            this.buttonLinkRequest.Click += new System.EventHandler(this.buttonLinkRequest_Click);
             // 
-            // textBox1
+            // textBoxWebAdress
             // 
-            this.textBox1.Location = new System.Drawing.Point(22, 49);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(556, 20);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBoxWebAdress.Location = new System.Drawing.Point(22, 49);
+            this.textBoxWebAdress.Name = "textBoxWebAdress";
+            this.textBoxWebAdress.Size = new System.Drawing.Size(556, 20);
+            this.textBoxWebAdress.TabIndex = 1;
+            this.textBoxWebAdress.TextChanged += new System.EventHandler(this.textBoxWebAdress_TextChanged);
             // 
             // textBox2
             // 
@@ -66,8 +66,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(603, 487);
             this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.textBoxWebAdress);
+            this.Controls.Add(this.buttonLinkRequest);
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Load += new System.EventHandler(this.MainForm_Load);
@@ -78,8 +78,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button buttonLinkRequest;
+        private System.Windows.Forms.TextBox textBoxWebAdress;
         private System.Windows.Forms.TextBox textBox2;
     }
 }
