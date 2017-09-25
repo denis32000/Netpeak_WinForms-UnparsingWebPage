@@ -32,14 +32,16 @@ namespace webpageParserShvetsovDenis
         {
             // http://kapon.com.ua/beginning.php
             string webAdress = textBoxWebAdress.Text; //"https://netpeaksoftware.com";
-            //string pattern = @"*://*.*/";
+
+            //TODO:
+            //string pattern = @"@(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS";
             //Regex rgx = new Regex(pattern);
+
             if (String.IsNullOrEmpty(webAdress))
             {
-                //TODO: error message
+                MessageBox.Show("Wrong link format.");
                 return;
             }
-
 
             var req = WebRequest.Create(webAdress) as HttpWebRequest;
             if (req == null)
@@ -115,15 +117,22 @@ namespace webpageParserShvetsovDenis
         {
             int listElementsCounter = 0;
             StringBuilder sb = new StringBuilder();
+
+            if (responseModel.Title == null)
+                responseModel.Title = "ERROR (Empty Title)";
+
+            if (responseModel.Description == null)
+                responseModel.Description = "ERROR (Empty Description)";
+
             //Dictionary<string, string> rowsElements = new Dictionary<string, string>();
             sb.Append($"Web resource adress {responseModel.Link}");
-            sb.Append($"\nTitle: {responseModel.Link}");
-            sb.Append($"\nDescription: {responseModel.Link}");
-            sb.Append($"\nResponse Code: {responseModel.Link}");
-            sb.Append($"\nResponse Time: {responseModel.Link}");
+            sb.Append($"\nTitle: {responseModel.Title}");
+            sb.Append($"\nDescription: {responseModel.Description}");
+            sb.Append($"\nResponse Code: {responseModel.ResponseCode}");
+            sb.Append($"\nResponse Time: {responseModel.ResponseTime}");
 
             listElementsCounter = 0;
-            sb.Append("Headers");
+            sb.Append("H1 Headers");
             foreach (var header in responseModel.HeadersH1)
             {
                 listElementsCounter++;
