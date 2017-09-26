@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Net;
 using System.Threading;
+using webpageParserShvetsovDenis.Models;
 
 namespace webpageParserShvetsovDenis
 {
@@ -144,7 +145,7 @@ namespace webpageParserShvetsovDenis
             }
             else if (_runningThreads.Count == 1)
             {
-                richTextBox1.Text = "Request was cancelled.\nResource data will be showed here..";
+                richTextBox1.Text = "Web request was cancelled.\nResource data will be showed here..";
             }
 
             var lastThread = _runningThreads.Last();

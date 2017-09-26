@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
-namespace webpageParserShvetsovDenis
+namespace webpageParserShvetsovDenis.Models
 {
     public class ResponseModel : INotifyPropertyChanged
     {
@@ -68,13 +67,6 @@ namespace webpageParserShvetsovDenis
                 OnPropertyChanged("ResponseCode");
             }
         }
-
-        [NotMapped]
-        public List<string> HeadersH1 { get; set; }
-        [NotMapped]
-        public List<string> Images { get; set; }
-        [NotMapped]
-        public List<string> AhrefLinks { get; set; }
         
         public string HeadersH1Json
         {
@@ -105,9 +97,15 @@ namespace webpageParserShvetsovDenis
                 OnPropertyChanged("AhrefLinksJson");
             }
         }
-
-
-
+        
+        // TODO: make properties use JsonParsing of private filds
+        //[NotMapped]
+        //public List<string> HeadersH1 { get; set; }
+        //[NotMapped]
+        //public List<string> Images { get; set; }
+        //[NotMapped]
+        //public List<string> AhrefLinks { get; set; }
+        
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {

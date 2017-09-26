@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using webpageParserShvetsovDenis.Models;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
 namespace webpageParserShvetsovDenis
@@ -23,23 +26,37 @@ namespace webpageParserShvetsovDenis
                 .GetAttributeValue("content", null);
 
             var h1Headers =
-                doc.DocumentNode.SelectNodes("//h1").Select(n => n.InnerText);
+                doc.DocumentNode.SelectNodes("//h1")
+                .Select(n => n.InnerText)
+                .ToList();
 
             var images =
-                doc.DocumentNode.SelectNodes("//img").Select(n => n.Attributes["src"].Value);
+                doc.DocumentNode.SelectNodes("//img")
+                .Select(n => n.Attributes["src"].Value)
+                .ToList();
 
             var links =
                 doc.DocumentNode.SelectNodes("//a")
                 .Where(l => l.HasAttributes && l.Attributes["href"] != null)
-                .Select(l => l.Attributes["href"].Value);
+                .Select(l => l.Attributes["href"].Value)
+                .ToList();
 
             // TODO: check if link starts with '/' -> add webAddress to the start of link
 
             responseModel.Title = pageTitle;
             responseModel.Description = pageDescription;
-            responseModel.AhrefLinks = links.ToList();
-            responseModel.HeadersH1 = h1Headers.ToList();
-            responseModel.Images = images.ToList();
+
+            try
+            {
+                responseModel.AhrefLinksJson = JsonConvert.SerializeObject(links);
+                responseModel.HeadersH1Json = JsonConvert.SerializeObject(h1Headers);
+                responseModel.ImagesJson = JsonConvert.SerializeObject(images);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Serialization trouble has appeared.\nException message: {e.Message}\n{e.InnerException?.Message}");
+                throw;
+            }
         }
 
         public async void SaveResponseModel(ResponseModel responseModel)
@@ -58,6 +75,9 @@ namespace webpageParserShvetsovDenis
             existingItem.Description = responseModel.Description;
             existingItem.ResponseCode = responseModel.ResponseCode;
             existingItem.ResponseTime = responseModel.ResponseTime;
+            existingItem.AhrefLinksJson = responseModel.AhrefLinksJson;
+            existingItem.HeadersH1Json = responseModel.HeadersH1Json;
+            existingItem.ImagesJson = responseModel.ImagesJson;
 
             if (!itemExistsInDatabase)
                 dbInstance.ResponseModels.Add(existingItem);
@@ -85,15 +105,30 @@ namespace webpageParserShvetsovDenis
             if (String.IsNullOrEmpty(responseModel.Description))
                 responseModel.Description = "ERROR (Empty Description)";
 
-            sb.Append($"Web resource adress {responseModel.Link}");
+            sb.Append($"Web resource adress: {responseModel.Link}");
             sb.Append($"\nTitle: {responseModel.Title}");
             sb.Append($"\nDescription: {responseModel.Description}");
             sb.Append($"\nResponse Code: {responseModel.ResponseCode}");
             sb.Append($"\nResponse Time: {responseModel.ResponseTime}");
 
+            var headersList = new List<string>();
+            var linksList = new List<string>();
+            var imagesList = new List<string>();
+
+            try
+            {
+                headersList = JsonConvert.DeserializeObject<List<string>>(responseModel.HeadersH1Json);
+                linksList = JsonConvert.DeserializeObject<List<string>>(responseModel.AhrefLinksJson);
+                imagesList = JsonConvert.DeserializeObject<List<string>>(responseModel.ImagesJson);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Deserialization trouble has appeared.\nException message: {e.Message}\n{e.InnerException?.Message}");
+            }
+            
             listElementsCounter = 0;
-            sb.Append("\nH1 Headers");
-            foreach (var header in responseModel.HeadersH1)
+            sb.Append("\nH1 Headers:");
+            foreach (var header in headersList)
             {
                 listElementsCounter++;
                 sb.Append($"\n\t{listElementsCounter}. {header}");
@@ -101,7 +136,7 @@ namespace webpageParserShvetsovDenis
 
             sb.Append("\nLinks:");
             listElementsCounter = 0;
-            foreach (var link in responseModel.AhrefLinks)
+            foreach (var link in linksList)
             {
                 listElementsCounter++;
                 sb.Append($"\n\t{listElementsCounter}. {link}");
@@ -109,7 +144,7 @@ namespace webpageParserShvetsovDenis
 
             sb.Append("\nImages:");
             listElementsCounter = 0;
-            foreach (var images in responseModel.Images)
+            foreach (var images in imagesList)
             {
                 listElementsCounter++;
                 sb.Append($"\n\t{listElementsCounter}. {images}");

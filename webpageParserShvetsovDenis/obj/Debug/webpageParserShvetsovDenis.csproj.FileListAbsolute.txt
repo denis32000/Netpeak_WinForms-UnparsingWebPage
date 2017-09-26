@@ -21,3 +21,5 @@ C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDeni
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.xml
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.dll.config
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\sqliteDbCode.db
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\Newtonsoft.Json.xml
