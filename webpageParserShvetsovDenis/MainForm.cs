@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Entity;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -26,12 +27,17 @@ namespace webpageParserShvetsovDenis
         private void MainForm_Load(object sender, EventArgs e)
         {
             // Do i need async or make thread from the beggining
+
+            //ApplicationContext db = new ApplicationContext();
+            //db.ResponseModels.Load();
+
+            DbConnectionManager.Instance.ResponseModels.Load();
         }
         
         private void buttonLinkRequest_Click(object sender, EventArgs e)
         {
             // http://kapon.com.ua/beginning.php
-            string webAdress = textBoxWebAdress.Text; //"https://netpeaksoftware.com";
+            string webAdress = "http://kapon.com.ua/beginning.php";// textBoxWebAdress.Text; //"https://netpeaksoftware.com";
 
             //TODO:
             //string pattern = @"@(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS";
@@ -104,13 +110,29 @@ namespace webpageParserShvetsovDenis
                 Title = pageTitle,
                 Description = pageDescription,
                 ResponseCode = (int)serverResponse.StatusCode,
-                ResponseTime = timeTaken,
+                ResponseTime = timeTaken.ToString(),
                 AhrefLinks = links.ToList(),
                 HeadersH1 = h1Headers.ToList(),
                 Images = images.ToList()
             };
 
             ShowResponseModel(responseModel);
+            SaveResponseModel(responseModel);
+        }
+
+        private static void SaveResponseModel(ResponseModel responseModel)
+        {
+            var rM = DbConnectionManager.Instance.ResponseModels.Create();
+            rM.Link = responseModel.Link;
+            rM.Title = responseModel.Title;
+            rM.Description = responseModel.Description;
+            rM.ResponseCode = responseModel.ResponseCode;
+            rM.ResponseTime = responseModel.ResponseTime;
+            DbConnectionManager.Instance.ResponseModels.Add(rM);
+            int result = DbConnectionManager.Instance.SaveChanges();
+
+            if (result == 0)
+                MessageBox.Show("Unable to save data to Database.");
         }
 
         public void ShowResponseModel(ResponseModel responseModel)
@@ -119,7 +141,7 @@ namespace webpageParserShvetsovDenis
             StringBuilder sb = new StringBuilder();
 
             if (responseModel.Title == null)
-                responseModel.Title = "ERROR (Empty Title)";
+                responseModel.Title = @"ERROR (Empty Title)";
 
             if (responseModel.Description == null)
                 responseModel.Description = "ERROR (Empty Description)";
@@ -132,7 +154,7 @@ namespace webpageParserShvetsovDenis
             sb.Append($"\nResponse Time: {responseModel.ResponseTime}");
 
             listElementsCounter = 0;
-            sb.Append("H1 Headers");
+            sb.Append("\nH1 Headers");
             foreach (var header in responseModel.HeadersH1)
             {
                 listElementsCounter++;
@@ -156,11 +178,6 @@ namespace webpageParserShvetsovDenis
             }
 
             richTextBox1.Text = sb.ToString();
-            //dataGridView1.Rows.Add(rowsElements); ///Columns.Add("Item")
-            //listView1.Items.Add("test");
-            //listView1.Items.Add("testfdfff");
-            //label1.Text = sb.ToString();
-            //dataGridView1. = sb.ToString();
         }
 
         private void textBoxWebAdress_TextChanged(object sender, EventArgs e)

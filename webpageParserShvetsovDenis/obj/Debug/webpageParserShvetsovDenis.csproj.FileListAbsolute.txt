@@ -11,3 +11,13 @@ C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDeni
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\HtmlAgilityPack.dll
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\HtmlAgilityPack.pdb
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\HtmlAgilityPack.xml
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\EntityFramework.dll
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.dll
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.EF6.dll
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.Linq.dll
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\EntityFramework.xml
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.xml
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\System.Data.SQLite.dll.config
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\bin\Debug\sqliteDbCode.db
