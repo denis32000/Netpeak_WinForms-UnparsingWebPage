@@ -31,7 +31,7 @@ namespace webpageParserShvetsovDenis
 
     public class ApplicationContext : DbContext
     {
-        public ApplicationContext() : base("DefaultConnection")//(string connectionString) : base(connectionString)// : base("DefaultConnection")
+        public ApplicationContext() : base("DefaultConnection")//(string connectionString) : base(connectionString)
         {
         }
         public DbSet<ResponseModel> ResponseModels { get; set; }
