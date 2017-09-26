@@ -26,27 +26,32 @@ namespace webpageParserShvetsovDenis
                 doc.DocumentNode.SelectSingleNode("//title")?.InnerText;
 
             var pageDescription =
-                doc.DocumentNode.SelectNodes("//meta")
+                doc.DocumentNode.SelectNodes("//meta")?
                 .FirstOrDefault(n => n.GetAttributeValue("name", "") == "description")?
                 .GetAttributeValue("content", null);
 
             var h1Headers =
-                doc.DocumentNode.SelectNodes("//h1")
+                doc.DocumentNode.SelectNodes("//h1")?
                 .Select(n => n.InnerText)
                 .ToList();
-
+            
             var images =
-                doc.DocumentNode.SelectNodes("//img")
+                doc.DocumentNode.SelectNodes("//img")?
                 .Select(n => n.Attributes["src"].Value)
                 .ToList();
 
             var links =
-                doc.DocumentNode.SelectNodes("//a")
+                doc.DocumentNode.SelectNodes("//a")?
                 .Where(l => l.HasAttributes && l.Attributes["href"] != null)
                 .Select(l => l.Attributes["href"].Value)
                 .ToList();
-
-            // TODO: check if link starts with '/' -> add webAddress to the start of link
+            
+            if (h1Headers == null)
+                h1Headers = new List<string>();
+            if (images == null)
+                images = new List<string>();
+            if (links == null)
+                links = new List<string>();
 
             responseModel.Title = pageTitle;
             responseModel.Description = pageDescription;
