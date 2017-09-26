@@ -30,109 +30,159 @@ namespace webpageParserShvetsovDenis
 
             //ApplicationContext db = new ApplicationContext();
             //db.ResponseModels.Load();
+            try
+            {
+                var dbInstance = DbConnectionManager.Instance;
+                dbInstance.ResponseModels.Load();
 
-            DbConnectionManager.Instance.ResponseModels.Load();
+                if (dbInstance.ResponseModels.Any())
+                    comboBox1.Items.AddRange(dbInstance.ResponseModels.Select(rm => rm.Link).ToArray());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Data base error has occured!\n{ex.Message}\n{ex.InnerException?.Message}");
+            }
         }
         
         private void buttonLinkRequest_Click(object sender, EventArgs e)
         {
-            // http://kapon.com.ua/beginning.php
-            string webAdress = "http://kapon.com.ua/beginning.php";// textBoxWebAdress.Text; //"https://netpeaksoftware.com";
+            string webAdress = textBoxWebAdress.Text; 
 
-            //TODO:
-            //string pattern = @"@(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS";
-            //Regex rgx = new Regex(pattern);
-
+            //TODO: regex for URL format
             if (String.IsNullOrEmpty(webAdress))
             {
-                MessageBox.Show("Wrong link format.");
+                MessageBox.Show("Link field can't be empty.");
                 return;
             }
 
-            var req = WebRequest.Create(webAdress) as HttpWebRequest;
-            if (req == null)
+            try
             {
-                MessageBox.Show("Unable to create web request from this link.");
-                return;
+                var req = WebRequest.Create(webAdress) as HttpWebRequest;
+
+                if (req == null)
+                {
+                    MessageBox.Show("Unable to create web request from this link.");
+                    return;
+                }
+
+                var timer = new Stopwatch();
+                timer.Start();
+                var serverResponse = req.GetResponse() as HttpWebResponse;
+                timer.Stop();
+                TimeSpan timeTaken = timer.Elapsed;
+
+                if (serverResponse?.StatusCode != HttpStatusCode.OK)
+                {
+                    MessageBox.Show($"Server responded with result {serverResponse?.StatusCode}!\n{serverResponse?.StatusDescription}");
+                }
+
+                var responseStream = serverResponse.GetResponseStream();
+                if (responseStream == null)
+                {
+                    MessageBox.Show("Unable to receive data stream from this resource.");
+                    return;
+                }
+
+                var streamReader = new StreamReader(responseStream);
+                string data = streamReader.ReadToEnd();
+                streamReader.Close();
+                serverResponse.Close();
+
+                var doc = new HtmlDocument();
+                doc.LoadHtml(data);
+
+                var pageTitle =
+                    doc.DocumentNode.SelectSingleNode("//title")?.InnerText;
+
+                var pageDescription =
+                    doc.DocumentNode.SelectNodes("//meta")
+                    .FirstOrDefault(n => n.GetAttributeValue("name", "") == "description")?
+                    .GetAttributeValue("content", null);
+
+                var h1Headers =
+                    doc.DocumentNode.SelectNodes("//h1").Select(n => n.InnerText);
+
+                var images =
+                    doc.DocumentNode.SelectNodes("//img").Select(n => n.Attributes["src"].Value);
+
+                var links =
+                    doc.DocumentNode.SelectNodes("//a")
+                    .Where(l => l.HasAttributes && l.Attributes["href"] != null)
+                    .Select(l => l.Attributes["href"].Value);
+
+                // TODO: check if link starts with '/' -> add webAddress to the start of link
+
+                var responseModel = new ResponseModel
+                {
+                    Link = webAdress,
+                    Title = pageTitle,
+                    Description = pageDescription,
+                    ResponseCode = (int)serverResponse.StatusCode,
+                    ResponseTime = timeTaken.ToString(),
+                    AhrefLinks = links.ToList(),
+                    HeadersH1 = h1Headers.ToList(),
+                    Images = images.ToList()
+                };
+
+                ShowResponseModel(responseModel);
+                SaveResponseModel(responseModel);
             }
-
-            var timer = new Stopwatch();
-            timer.Start();
-            var serverResponse = req.GetResponse() as HttpWebResponse;
-            timer.Stop();
-            TimeSpan timeTaken = timer.Elapsed;
-
-            if (serverResponse?.StatusCode != HttpStatusCode.OK)
+            catch (Exception exception)
             {
-                MessageBox.Show($"Server responded with result {serverResponse?.StatusCode}!\n{serverResponse?.StatusDescription}");
-                return;
+                MessageBox.Show($"Error has occured!\n{exception.Message}\n{exception.InnerException?.Message}");
             }
-
-            var responseStream = serverResponse.GetResponseStream();
-            if (responseStream == null)
-            {
-                MessageBox.Show("Unable to receive data stream from this resource.");
-                return;
-            }
-
-            var streamReader = new StreamReader(responseStream);
-            string data = streamReader.ReadToEnd();
-            streamReader.Close();
-            serverResponse.Close();
-
-            var doc = new HtmlDocument();
-            doc.LoadHtml(data);
-
-            var pageTitle =
-                doc.DocumentNode.SelectSingleNode("//title")?.InnerText;
-
-            var pageDescription =
-                doc.DocumentNode.SelectNodes("//meta")
-                .FirstOrDefault(n => n.GetAttributeValue("name", "") == "description")?
-                .GetAttributeValue("content", null);
-
-            var h1Headers =
-                doc.DocumentNode.SelectNodes("//h1").Select(n => n.InnerText);
-
-            var images =
-                doc.DocumentNode.SelectNodes("//img").Select(n => n.Attributes["src"].Value);
-
-            var links =
-                doc.DocumentNode.SelectNodes("//a")
-                .Where(l => l.HasAttributes && l.Attributes["href"] != null)
-                .Select(l => l.Attributes["href"].Value);
-
-            // TODO: check if link starts with '/' -> add webAddress to the start of link
-
-            var responseModel = new ResponseModel
-            {
-                Link = webAdress,
-                Title = pageTitle,
-                Description = pageDescription,
-                ResponseCode = (int)serverResponse.StatusCode,
-                ResponseTime = timeTaken.ToString(),
-                AhrefLinks = links.ToList(),
-                HeadersH1 = h1Headers.ToList(),
-                Images = images.ToList()
-            };
-
-            ShowResponseModel(responseModel);
-            SaveResponseModel(responseModel);
         }
 
-        private static void SaveResponseModel(ResponseModel responseModel)
+        private void buttonDatabaseRequest_Click(object sender, EventArgs e)
         {
-            var rM = DbConnectionManager.Instance.ResponseModels.Create();
-            rM.Link = responseModel.Link;
-            rM.Title = responseModel.Title;
-            rM.Description = responseModel.Description;
-            rM.ResponseCode = responseModel.ResponseCode;
-            rM.ResponseTime = responseModel.ResponseTime;
-            DbConnectionManager.Instance.ResponseModels.Add(rM);
-            int result = DbConnectionManager.Instance.SaveChanges();
+            if (String.IsNullOrEmpty(comboBox1.Text))
+            {
+                MessageBox.Show("Choose item from the list first!");
+                return;
+            }
+
+            ResponseModel responseModel =
+                DbConnectionManager.Instance.ResponseModels.FirstOrDefault(rm => rm.Link.Equals(comboBox1.Text));
+
+            if (responseModel == null)
+            {
+                MessageBox.Show("Such address wasn't found in DB!");
+                return;
+            }
+
+            ShowResponseModel(responseModel);
+        }
+
+        private void SaveResponseModel(ResponseModel responseModel)
+        {
+            var dbInstance = DbConnectionManager.Instance;
+            bool itemExistsInDatabase = false;
+            var existingItem = dbInstance.ResponseModels.FirstOrDefault(rm => rm.Link.Equals(responseModel.Link));
+
+            if (existingItem == null)
+                existingItem = dbInstance.ResponseModels.Create();
+            else
+                itemExistsInDatabase = true;
+
+            existingItem.Link = responseModel.Link;
+            existingItem.Title = responseModel.Title;
+            existingItem.Description = responseModel.Description;
+            existingItem.ResponseCode = responseModel.ResponseCode;
+            existingItem.ResponseTime = responseModel.ResponseTime;
+
+            if(!itemExistsInDatabase)
+                dbInstance.ResponseModels.Add(existingItem);
+
+            int result = dbInstance.SaveChanges();
 
             if (result == 0)
                 MessageBox.Show("Unable to save data to Database.");
+
+            if (dbInstance.ResponseModels.Any())
+            {
+                comboBox1.Items.Clear();
+                comboBox1.Items.AddRange(dbInstance.ResponseModels.Select(rm => rm.Link).ToArray());
+            }
         }
 
         public void ShowResponseModel(ResponseModel responseModel)
@@ -140,10 +190,10 @@ namespace webpageParserShvetsovDenis
             int listElementsCounter = 0;
             StringBuilder sb = new StringBuilder();
 
-            if (responseModel.Title == null)
+            if (String.IsNullOrEmpty(responseModel.Title))
                 responseModel.Title = @"ERROR (Empty Title)";
-
-            if (responseModel.Description == null)
+            
+            if (String.IsNullOrEmpty(responseModel.Description))
                 responseModel.Description = "ERROR (Empty Description)";
 
             //Dictionary<string, string> rowsElements = new Dictionary<string, string>();
@@ -183,21 +233,6 @@ namespace webpageParserShvetsovDenis
         private void textBoxWebAdress_TextChanged(object sender, EventArgs e)
         {
             // TODO: validation
-        }
-        
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
-        {
-
         }
     }
 }
