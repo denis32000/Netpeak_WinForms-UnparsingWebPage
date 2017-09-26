@@ -22,3 +22,4 @@ C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDeni
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\obj\Debug\webpageParserShvetsovDenis.csproj.CoreCompileInputs.cache
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\obj\Debug\webpageParserShvetsovDenis.exe
 C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\obj\Debug\webpageParserShvetsovDenis.pdb
+C:\Users\Denis32\Documents\Visual Studio 2017\Projects\webpageParserShvetsovDenis\webpageParserShvetsovDenis\obj\Debug\webpageParserShvetsovDenis.csprojResolveAssemblyReference.cache

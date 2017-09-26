@@ -50,7 +50,8 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error occured while connecting to Data Base!\n{ex.Message}\n{ex.InnerException?.Message}");
+                MessageBox.Show($"Error occured while connecting to Data Base!\n{ex.Message}\n{ex.InnerException?.Message}", "Error",  
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -66,7 +67,7 @@ namespace webpageParserShvetsovDenis
             //TODO: regex for URL format
             if (String.IsNullOrEmpty(webAdress))
             {
-                MessageBox.Show("Link field can't be empty.");
+                MessageBox.Show("Link field can't be empty.", "Help", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -76,7 +77,8 @@ namespace webpageParserShvetsovDenis
 
                 if (req == null)
                 {
-                    MessageBox.Show("Unable to create web request from this link.");
+                    MessageBox.Show("Unable to create web request from this link.", "Help", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -88,13 +90,15 @@ namespace webpageParserShvetsovDenis
 
                 if (serverResponse?.StatusCode != HttpStatusCode.OK)
                 {
-                    MessageBox.Show($"Server responded with result {serverResponse?.StatusCode}!\n{serverResponse?.StatusDescription}");
+                    MessageBox.Show($"Server responded with result {serverResponse?.StatusCode}!\n{serverResponse?.StatusDescription}", "Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 var responseStream = serverResponse.GetResponseStream();
                 if (responseStream == null)
                 {
-                    MessageBox.Show("Unable to receive data stream from this resource.");
+                    MessageBox.Show("Unable to receive data stream from this resource.", "Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -128,7 +132,8 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"Error has occured!\n{exception.Message}\n{exception.InnerException?.Message}");
+                MessageBox.Show($"Error has occured!\n{exception.Message}\n{exception.InnerException?.Message}", "Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -141,7 +146,8 @@ namespace webpageParserShvetsovDenis
         {
             if (String.IsNullOrEmpty(comboBox1.Text))
             {
-                MessageBox.Show("Choose item from the list first!");
+                MessageBox.Show("Choose item from the list first!", "Help",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -151,7 +157,8 @@ namespace webpageParserShvetsovDenis
                     DbConnectionManager.Instance.ResponseModels.FirstOrDefault(rm => rm.Link.Equals(comboBox1.Text));
                 if (responseModel == null)
                 {
-                    MessageBox.Show("Such address wasn't found in DB!");
+                    MessageBox.Show("Such address wasn't found in DB!", "Help",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -159,7 +166,8 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"Error getting data from DB!\n{exception.Message}\n{exception.InnerException?.Message}");
+                MessageBox.Show($"Error getting data from DB!\n{exception.Message}\n{exception.InnerException?.Message}", "Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -172,7 +180,8 @@ namespace webpageParserShvetsovDenis
         {
             if (_runningThreads.Count == 0)
             {
-                MessageBox.Show("There are no other threads currently running!");
+                MessageBox.Show("There are no other threads currently running!", "Help", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
             else if (_runningThreads.Count == 1)
@@ -185,7 +194,8 @@ namespace webpageParserShvetsovDenis
             lastThread.Abort();
             _runningThreads.Remove(lastThread);
 
-            MessageBox.Show($"Last thread with status {Enum.GetName(typeof(System.Threading.ThreadState), threadState)} was aborted!");
+            MessageBox.Show($"Last thread with status {Enum.GetName(typeof(System.Threading.ThreadState), threadState)} was aborted!", "Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

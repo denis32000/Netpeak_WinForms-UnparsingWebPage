@@ -59,7 +59,8 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Serialization trouble has appeared.\nException message: {e.Message}\n{e.InnerException?.Message}");
+                MessageBox.Show($"Serialization trouble has appeared.\nException message: {e.Message}\n{e.InnerException?.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw;
             }
         }
@@ -97,12 +98,13 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Changes have not been saved.\nException message: {e.Message}\n{e.InnerException?.Message}");
+                MessageBox.Show($"Changes have not been saved.\nException message: {e.Message}\n{e.InnerException?.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 throw;
             }
 
             //if (result == 0)
-            //    MessageBox.Show("Unable to save data to Database.");
+            //    MessageBox.Show("Help", "Unable to save data to Database.");
 
             if (dbInstance.ResponseModels.Any())
             {
@@ -144,7 +146,8 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Deserialization trouble has appeared.\nException message: {e.Message}\n{e.InnerException?.Message}");
+                MessageBox.Show($"Deserialization trouble has appeared.\nException message: {e.Message}\n{e.InnerException?.Message}", "Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             
             listElementsCounter = 0;
