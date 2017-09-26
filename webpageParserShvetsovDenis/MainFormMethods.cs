@@ -82,10 +82,18 @@ namespace webpageParserShvetsovDenis
             if (!itemExistsInDatabase)
                 dbInstance.ResponseModels.Add(existingItem);
 
-            int result = await dbInstance.SaveChangesAsync();
+            try
+            {
+                await dbInstance.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Changes have not been saved.\nException message: {e.Message}\n{e.InnerException?.Message}");
+                throw;
+            }
 
-            if (result == 0)
-                MessageBox.Show("Unable to save data to Database.");
+            //if (result == 0)
+            //    MessageBox.Show("Unable to save data to Database.");
 
             if (dbInstance.ResponseModels.Any())
             {
@@ -142,7 +150,7 @@ namespace webpageParserShvetsovDenis
 
                 if (!link.StartsWith("http") && checkBox1.Checked) // Internal links has full format
                 {
-                    sb.Append($"\n\t{listElementsCounter}. {responseModel.Link}{link.Remove(0)}");
+                    sb.Append($"\n\t{listElementsCounter}. {responseModel.Link}{link.Remove(0,1)}");
                     continue;
                 }
 
@@ -156,6 +164,7 @@ namespace webpageParserShvetsovDenis
                 listElementsCounter++;
                 sb.Append($"\n\t{listElementsCounter}. {images}");
             }
+            sb.Append("\n ");
 
             richTextBox1.Text = sb.ToString();
         }

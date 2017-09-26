@@ -14,12 +14,12 @@ namespace webpageParserShvetsovDenis
 {
     public partial class MainForm : Form
     {
+        private List<Thread> _runningThreads;
+
         public delegate void ResponseModelDelegate(ResponseModel rm);
         public ResponseModelDelegate saveDataDelegate;
         public ResponseModelDelegate showOutputDelegate;
-
-        private List<Thread> _runningThreads = new List<Thread>();
-
+        
         public MainForm()
         {
             InitializeComponent();
@@ -29,6 +29,8 @@ namespace webpageParserShvetsovDenis
         
         private void MainForm_Load(object sender, EventArgs e)
         {
+            _runningThreads = new List<Thread>();
+
             try
             {
                 var dbInstance = DbConnectionManager.Instance;
@@ -39,7 +41,7 @@ namespace webpageParserShvetsovDenis
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Data base error has occured!\n{ex.Message}\n{ex.InnerException?.Message}");
+                MessageBox.Show($"Error occured while connecting to Data Base!\n{ex.Message}\n{ex.InnerException?.Message}");
             }
         }
         
@@ -124,16 +126,22 @@ namespace webpageParserShvetsovDenis
                 return;
             }
 
-            ResponseModel responseModel =
-                DbConnectionManager.Instance.ResponseModels.FirstOrDefault(rm => rm.Link.Equals(comboBox1.Text));
-
-            if (responseModel == null)
+            try
             {
-                MessageBox.Show("Such address wasn't found in DB!");
-                return;
-            }
+                ResponseModel responseModel =
+                    DbConnectionManager.Instance.ResponseModels.FirstOrDefault(rm => rm.Link.Equals(comboBox1.Text));
+                if (responseModel == null)
+                {
+                    MessageBox.Show("Such address wasn't found in DB!");
+                    return;
+                }
 
-            ShowResponseModel(responseModel);
+                ShowResponseModel(responseModel);
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show($"Error getting data from DB!\n{exception.Message}\n{exception.InnerException?.Message}");
+            }
         }
 
         private void buttonStopRequestThread_Click(object sender, EventArgs e)
@@ -154,16 +162,6 @@ namespace webpageParserShvetsovDenis
             _runningThreads.Remove(lastThread);
 
             MessageBox.Show($"Last thread with status {Enum.GetName(typeof(System.Threading.ThreadState), threadState)} was aborted!");
-        }
-
-        private void textBoxWebAdress_TextChanged(object sender, EventArgs e)
-        {
-            // TODO: validation?
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

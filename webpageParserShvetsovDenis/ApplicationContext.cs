@@ -7,8 +7,6 @@ namespace webpageParserShvetsovDenis
 {
     public class DbConnectionManager : IDbContextFactory<ApplicationContext>
     {
-        //private static string ConnectionString = "";
-        
         private static ApplicationContext _instance;
 
         public static ApplicationContext Instance
@@ -23,10 +21,7 @@ namespace webpageParserShvetsovDenis
 
         public ApplicationContext Create()
         {
-            //if (string.IsNullOrEmpty(ConnectionString))
-            //    throw new InvalidOperationException("Please set the connection parameters before trying to instantiate a database connection.");
-
-            return new ApplicationContext(); //(ConnectionString);
+            return new ApplicationContext();
         }
     }
 
