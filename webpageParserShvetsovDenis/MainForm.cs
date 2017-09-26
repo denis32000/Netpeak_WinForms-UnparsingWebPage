@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Threading;
 using HtmlAgilityPack;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 
@@ -19,17 +20,19 @@ namespace webpageParserShvetsovDenis
 {
     public partial class MainForm : Form
     {
+        public delegate void ResponseModelDelegate(ResponseModel rm);
+        public ResponseModelDelegate saveDataDelegate;
+        public ResponseModelDelegate showOutputDelegate;
+
         public MainForm()
         {
             InitializeComponent();
+            saveDataDelegate = new ResponseModelDelegate(SaveResponseModel);
+            showOutputDelegate = new ResponseModelDelegate(ShowResponseModel);
         }
         
         private void MainForm_Load(object sender, EventArgs e)
         {
-            // Do i need async or make thread from the beggining
-
-            //ApplicationContext db = new ApplicationContext();
-            //db.ResponseModels.Load();
             try
             {
                 var dbInstance = DbConnectionManager.Instance;
@@ -88,49 +91,64 @@ namespace webpageParserShvetsovDenis
                 streamReader.Close();
                 serverResponse.Close();
 
-                var doc = new HtmlDocument();
-                doc.LoadHtml(data);
-
-                var pageTitle =
-                    doc.DocumentNode.SelectSingleNode("//title")?.InnerText;
-
-                var pageDescription =
-                    doc.DocumentNode.SelectNodes("//meta")
-                    .FirstOrDefault(n => n.GetAttributeValue("name", "") == "description")?
-                    .GetAttributeValue("content", null);
-
-                var h1Headers =
-                    doc.DocumentNode.SelectNodes("//h1").Select(n => n.InnerText);
-
-                var images =
-                    doc.DocumentNode.SelectNodes("//img").Select(n => n.Attributes["src"].Value);
-
-                var links =
-                    doc.DocumentNode.SelectNodes("//a")
-                    .Where(l => l.HasAttributes && l.Attributes["href"] != null)
-                    .Select(l => l.Attributes["href"].Value);
-
-                // TODO: check if link starts with '/' -> add webAddress to the start of link
-
-                var responseModel = new ResponseModel
+                ResponseModel responseModel = new ResponseModel
                 {
                     Link = webAdress,
-                    Title = pageTitle,
-                    Description = pageDescription,
                     ResponseCode = (int)serverResponse.StatusCode,
-                    ResponseTime = timeTaken.ToString(),
-                    AhrefLinks = links.ToList(),
-                    HeadersH1 = h1Headers.ToList(),
-                    Images = images.ToList()
+                    ResponseTime = timeTaken.ToString()
                 };
 
-                ShowResponseModel(responseModel);
-                SaveResponseModel(responseModel);
+                // Treading
+                Thread t = Thread.CurrentThread;
+                var anotherThread = (new Thread(delegate () {
+                    ParsePageNodes(data, responseModel);
+                    Invoke(showOutputDelegate, responseModel);
+                    Invoke(saveDataDelegate, responseModel);
+                }));
+                anotherThread.Start();
+
+                richTextBox1.Text = "Request was sent! Wait for results..";
+                //ParsePageNodes(data, responseModel);
+                //ShowResponseModel(responseModel);
+                //SaveResponseModel(responseModel);
             }
             catch (Exception exception)
             {
                 MessageBox.Show($"Error has occured!\n{exception.Message}\n{exception.InnerException?.Message}");
             }
+        }
+
+        private static void ParsePageNodes(string data, ResponseModel responseModel)
+        {
+            var doc = new HtmlDocument();
+            doc.LoadHtml(data);
+
+            var pageTitle =
+                doc.DocumentNode.SelectSingleNode("//title")?.InnerText;
+
+            var pageDescription =
+                doc.DocumentNode.SelectNodes("//meta")
+                .FirstOrDefault(n => n.GetAttributeValue("name", "") == "description")?
+                .GetAttributeValue("content", null);
+
+            var h1Headers =
+                doc.DocumentNode.SelectNodes("//h1").Select(n => n.InnerText);
+
+            var images =
+                doc.DocumentNode.SelectNodes("//img").Select(n => n.Attributes["src"].Value);
+
+            var links =
+                doc.DocumentNode.SelectNodes("//a")
+                .Where(l => l.HasAttributes && l.Attributes["href"] != null)
+                .Select(l => l.Attributes["href"].Value);
+
+            // TODO: check if link starts with '/' -> add webAddress to the start of link
+
+            responseModel.Title = pageTitle;
+            responseModel.Description = pageDescription;
+            responseModel.AhrefLinks = links.ToList();
+            responseModel.HeadersH1 = h1Headers.ToList();
+            responseModel.Images = images.ToList();
         }
 
         private void buttonDatabaseRequest_Click(object sender, EventArgs e)
@@ -153,11 +171,11 @@ namespace webpageParserShvetsovDenis
             ShowResponseModel(responseModel);
         }
 
-        private void SaveResponseModel(ResponseModel responseModel)
+        public async void SaveResponseModel(ResponseModel responseModel)
         {
             var dbInstance = DbConnectionManager.Instance;
             bool itemExistsInDatabase = false;
-            var existingItem = dbInstance.ResponseModels.FirstOrDefault(rm => rm.Link.Equals(responseModel.Link));
+            var existingItem = await dbInstance.ResponseModels.FirstOrDefaultAsync(rm => rm.Link.Equals(responseModel.Link));
 
             if (existingItem == null)
                 existingItem = dbInstance.ResponseModels.Create();
@@ -173,7 +191,7 @@ namespace webpageParserShvetsovDenis
             if(!itemExistsInDatabase)
                 dbInstance.ResponseModels.Add(existingItem);
 
-            int result = dbInstance.SaveChanges();
+            int result = await dbInstance.SaveChangesAsync();
 
             if (result == 0)
                 MessageBox.Show("Unable to save data to Database.");
@@ -195,8 +213,7 @@ namespace webpageParserShvetsovDenis
             
             if (String.IsNullOrEmpty(responseModel.Description))
                 responseModel.Description = "ERROR (Empty Description)";
-
-            //Dictionary<string, string> rowsElements = new Dictionary<string, string>();
+            
             sb.Append($"Web resource adress {responseModel.Link}");
             sb.Append($"\nTitle: {responseModel.Title}");
             sb.Append($"\nDescription: {responseModel.Description}");
@@ -233,6 +250,11 @@ namespace webpageParserShvetsovDenis
         private void textBoxWebAdress_TextChanged(object sender, EventArgs e)
         {
             // TODO: validation
+        }
+
+        private void buttonStopRequestThread_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
