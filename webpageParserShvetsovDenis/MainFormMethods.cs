@@ -139,6 +139,13 @@ namespace webpageParserShvetsovDenis
             foreach (var link in linksList)
             {
                 listElementsCounter++;
+
+                if (!link.StartsWith("http") && checkBox1.Checked) // Internal links has full format
+                {
+                    sb.Append($"\n\t{listElementsCounter}. {responseModel.Link}{link.Remove(0)}");
+                    continue;
+                }
+
                 sb.Append($"\n\t{listElementsCounter}. {link}");
             }
 
