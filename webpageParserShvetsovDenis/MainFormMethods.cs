@@ -12,6 +12,11 @@ namespace webpageParserShvetsovDenis
 {
     public partial class MainForm : Form
     {
+        /// <summary>
+        /// Gets data from the tags to fill ResponseModel object.
+        /// </summary>
+        /// <param name="data">Html of web page</param>
+        /// <param name="responseModel">Properties of this object will be updated</param>
         private static void ParsePageNodes(string data, ResponseModel responseModel)
         {
             var doc = new HtmlDocument();
@@ -59,6 +64,10 @@ namespace webpageParserShvetsovDenis
             }
         }
 
+        /// <summary>
+        /// Saves ResponseModel object to DataBase.
+        /// </summary>
+        /// <param name="responseModel">Object to save</param>
         public async void SaveResponseModel(ResponseModel responseModel)
         {
             var dbInstance = DbConnectionManager.Instance;
@@ -102,6 +111,10 @@ namespace webpageParserShvetsovDenis
             }
         }
 
+        /// <summary>
+        /// Outputs formatted data of received ResponceModel object.
+        /// </summary>
+        /// <param name="responseModel">Object to output</param>
         public void ShowResponseModel(ResponseModel responseModel)
         {
             int listElementsCounter = 0;

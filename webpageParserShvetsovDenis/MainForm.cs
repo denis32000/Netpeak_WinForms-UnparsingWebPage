@@ -12,10 +12,14 @@ using webpageParserShvetsovDenis.Models;
 
 namespace webpageParserShvetsovDenis
 {
+    /// <summary>
+    /// Main form of application
+    /// </summary>
     public partial class MainForm : Form
     {
-        private List<Thread> _runningThreads;
+        private List<Thread> _runningThreads; // threads stack
 
+        // Used for backcalls from additional threads
         public delegate void ResponseModelDelegate(ResponseModel rm);
         public ResponseModelDelegate saveDataDelegate;
         public ResponseModelDelegate showOutputDelegate;
@@ -27,6 +31,11 @@ namespace webpageParserShvetsovDenis
             showOutputDelegate = new ResponseModelDelegate(ShowResponseModel);
         }
         
+        /// <summary>
+        /// Loads main form and opens connection with Data Base
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
             _runningThreads = new List<Thread>();
@@ -44,7 +53,12 @@ namespace webpageParserShvetsovDenis
                 MessageBox.Show($"Error occured while connecting to Data Base!\n{ex.Message}\n{ex.InnerException?.Message}");
             }
         }
-        
+
+        /// <summary>
+        /// Button click to Request data from web resource
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonLinkRequest_Click(object sender, EventArgs e)
         {
             string webAdress = textBoxWebAdress.Text; 
@@ -117,7 +131,12 @@ namespace webpageParserShvetsovDenis
                 MessageBox.Show($"Error has occured!\n{exception.Message}\n{exception.InnerException?.Message}");
             }
         }
-        
+
+        /// <summary>
+        /// Button click to Load data from DataBase
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonDatabaseRequest_Click(object sender, EventArgs e)
         {
             if (String.IsNullOrEmpty(comboBox1.Text))
@@ -144,6 +163,11 @@ namespace webpageParserShvetsovDenis
             }
         }
 
+        /// <summary>
+        /// Button click to finish last thread in the threads stack
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonStopRequestThread_Click(object sender, EventArgs e)
         {
             if (_runningThreads.Count == 0)

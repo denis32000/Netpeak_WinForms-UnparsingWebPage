@@ -98,14 +98,6 @@ namespace webpageParserShvetsovDenis.Models
             }
         }
         
-        // TODO: make properties use JsonParsing of private filds
-        //[NotMapped]
-        //public List<string> HeadersH1 { get; set; }
-        //[NotMapped]
-        //public List<string> Images { get; set; }
-        //[NotMapped]
-        //public List<string> AhrefLinks { get; set; }
-        
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string prop = "")
         {
